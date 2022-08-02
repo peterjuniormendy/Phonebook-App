@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phonebook App</title>
+  <link rel="stylesheet" href="bootstrap.css">
+  <style>
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 15rem;
+      min-height: 100vh;
+
+    }
+
+    .sidebar .heading-wrapper {
+      margin-left: -1rem;
+      margin-right: -1rem
+    }
+
+    main {
+      margin-left: 15rem;
+    }
+
+    .space-x-2>*+* {
+      margin-left: 0.5rem;
+    }
+
+    .cursor-not-allowed {
+      cursor: not-allowed !important;
+      pointer-events: initial !important;
+    }
+  </style>
+</head>
+
+<body class="d-flex">
+
+  <!-- <h1 class="text-primary">Phonebook App</h1> -->
+  <div class="sidebar bg-primary py-4 px-3">
+    <div class="pb-2 border-bottom border-dark border-2 heading-wrapper">
+      <h1 class="text-white fs-4 fw-bolder text-center">Phonebook <br />App</h1>
+    </div>
+  </div>
+  <main class="py-5 flex-grow-1">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0 fs-3">All Contacts (<span id="all-contacts-count">0</span>)</h2>
+
+        <button class="btn btn-primary" id="create-contact-button">New Contact</button>
+      </div>
+
+
+
+      <div class="mt-5">
+        <div class="alert alert-dismissible alert-success mb-4 d-none" id="success-alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          <strong>Contact saved!</strong> You have successfully saved the new contact.
+        </div>
+
+        <div class="alert alert-dismissible alert-info mb-4 d-none" id="info-alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          <strong>Contact saved!</strong> You have successfully saved the contact.
+        </div>
+
+        <div class="alert alert-dismissible alert-danger mb-4 d-none" id="danger-alert">
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          <strong>Contact deleted!</strong> You have successfully deleted the contact.
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex align-items-center">
+            <input type="text" class="form-control" placeholder="Search Contacts" id="search-contact-input">
+
+            <div class="ms-4 d-none" style="min-width: max-content;" id="selected-contacts">
+              <button class="btn btn-danger">Delete <strong class="fw-bolder" id="selected-contacts-count">4</strong>
+                selected
+                contacts</button>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center">
+
+            <p class="mb-0 me-3" style="min-width: max-content;">Per Page</p>
+            <select class="form-select" name="per-page" id="per-page">
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="25">25</option>
+              <option value="">All</option>
+            </select>
+          </div>
+        </div>
+        <table class="table table-hover shadow" id="contacts-table">
+          <thead>
+            <tr>
+              <th scope="col">
+                <input class="form-check-input" type="checkbox" value="all" data-select-contact="all" id="checkbox-all">
+              </th>
+              <th scope="col">Name</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Email</th>
+              <th scope="col">Address</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+
+
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+
+  <div class="modal" id="contact-form-modal">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 100%; max-width: 650px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Contact</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="" id="contact-form" novalidate>
+            <div class="form-group has-validation">
+              <label for="name" class="form-label mb-1">Name</label>
+              <input type="text" class="form-control" id="name" required>
+              <div class="invalid-feedback">
+                Name is required.
+              </div>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="phone" class="form-label mb-1">Phone</label>
+              <input type="text" class="form-control" id="phone" required>
+              <div class="invalid-feedback">
+                Phone is required.
+              </div>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="email" class="form-label mb-1">Email</label>
+              <input type="email" class="form-control" id="email" required>
+              <div class="invalid-feedback">
+                Email is required.
+              </div>
+            </div>
+
+            <div class="form-group mt-4">
+              <label for="address" class="form-label mb-1">Address</label>
+              <textarea class="form-control" rows="2" id="address" required></textarea>
+              <div class="invalid-feedback">
+                Address is required.
+              </div>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" form="contact-form" id="submit">Save</button>
+          <button class="btn btn-primary cursor-not-allowed d-none" type="button" id="processing" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Saving...
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="delete-contact-modal">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 100%; max-width: 600px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Contact</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body py-4 px-4">
+          <p class="mb-0">Are you sure you want to delete <strong class="text-danger" id="delete-contact-name">Omar
+              Jasseh</strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="process-delete-button">Yes Continue Delete</button>
+          <button class="btn btn-danger cursor-not-allowed d-none" type="button" id="processing-delete-button" disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Processing Delete...
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="bootstrap/js/bootstrap.js"></script>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
