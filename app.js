@@ -1,6 +1,7 @@
 // State Variables
 let contactState = "create";
 let contactId = null;
+let selectedContactsCount = 0;
 
 // Contact UI Elements
 const newContactButton = document.querySelector('#create-contact-button')
@@ -11,6 +12,9 @@ const contactFormModalTitleEl = document.querySelector('.modal-title');
 const deleteContactModalEl = document.querySelector('#delete-contact-modal');
 const deleteContactNameEl = document.querySelector('#delete-contact-name');
 const searchContactInput = document.querySelector('#search-contact-input');
+const selectedContactsEl = document.querySelector('#selected-contacts');
+const selectedContactsCountEl = document.querySelector('#selected-contacts-count');
+// const selectContactChexboxes = document.querySelectorAll('["data-select-contact"]');
 
 // Instantiate Bootstrap Modals
 const contactFormModal = new bootstrap.Modal(contactFormModalEl);
@@ -87,10 +91,8 @@ function displayContacts(contacts = null) {
     contactsData += `<tr>
     <td>
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="${index}" id="checkbox-${index}">
-        <!-- <label class="form-check-label" for="checkbox-${index}">
-          ${index + 1}
-        </label> -->
+        <input class="form-check-input" type="checkbox" value="${index}" id="checkbox-${index}"  data-select-contact=${index}>
+       
       </div>
     </td>
     <th scope="row">${contact.name}</th>
@@ -162,6 +164,8 @@ searchContactInput.addEventListener('input', () => {
   searchContacts(searchContactInput.value);
 });
 
+
+
 /* Create Contact Modal - Listen for a click on the "New Contact", and then open the Contact Form Modal  */
 newContactButton.addEventListener('click', () => {
   contactFormModal.show();
@@ -203,6 +207,40 @@ document.addEventListener('click', (event) => {
 
     deleteContactModal.show();
 
+  }
+
+  if (event.target.getAttribute('data-select-contact')) {
+    
+    let checkboxEl = event.target;
+    let checkboxes = document.querySelectorAll('[data-select-contact]');
+    
+    if(checkboxEl.value == 'all') {
+      if (checkboxEl.checked) {
+        checkboxes.forEach(checkbox => checkbox.checked = true)
+        selectedContactsCount = checkboxes.length - 1;
+      } else {
+        checkboxes.forEach(checkbox => checkbox.checked = false)
+        selectedContactsCount = 0
+      }
+      
+    
+    } else {
+      if (checkboxEl.checked) {
+        selectedContactsCount++;
+      } else {
+        selectedContactsCount--;
+      }
+    }
+
+    if (selectedContactsCount) {
+      selectedContactsCountEl.textContent = selectedContactsCount;
+      selectedContactsEl.classList.remove('d-none');
+    } else {
+      selectedContactsCountEl.textContent = 0;
+      selectedContactsEl.classList.add('d-none');
+    }
+
+  
   }
 });
 
