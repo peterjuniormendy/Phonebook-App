@@ -52,7 +52,7 @@
 
         <button class="btn btn-primary" id="create-contact-button">New Contact</button>
 
-        
+
       </div>
 
 
@@ -76,7 +76,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
           <div class="d-flex align-items-center">
             <input type="text" class="form-control" placeholder="Search Contacts" id="search-contact-input">
-          
+
 
             <div class="ms-4 d-none" style="min-width: max-content;" id="selected-contacts">
               <button class="btn btn-danger">Delete <strong class="fw-bolder" id="selected-contacts-count">4</strong>
@@ -202,9 +202,34 @@
     </div>
   </div>
 
+  <div class="modal" id="delete-contacts-modal">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 100%; max-width: 600px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete Contacts</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+          </button>
+        </div>
+        <div class="modal-body py-4 px-4">
+          <p class="mb-0">Are you sure you want to delete <strong class="text-danger"
+              id="delete-contacts-count">0</strong> selected contacts?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="process-delete-selected-button">Yes Continue Delete</button>
+          <button class="btn btn-danger cursor-not-allowed d-none" type="button" id="processing-delete-selected-button"
+            disabled>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            Processing Delete...
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <script src="bootstrap/js/bootstrap.js"></script>
 
-  <script src="app.js"></script>
+  <script type="module" src="app.js"></script>
 </body>
 
 </html>

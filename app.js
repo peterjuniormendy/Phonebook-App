@@ -1,175 +1,57 @@
 // State Variables
+import { displayContacts, searchContacts, getAllContacts, hideAlert, resetForm } from "./functions.js";
+
+// Form Elements
+import { fullName, phone, email, address, submitButton, processingButton } from "./form-elements.js"; 
+
+// Contact UI Elements
+import { 
+  newContactButton, 
+  contactForm, 
+  contactFormModalEl, 
+  contactFormModalTitleEl, 
+  deleteContactModalEl,
+  deleteContactNameEl,
+  searchContactInput,
+  selectedContactsEl,
+  selectedContactsCountEl,
+  deleteContactsCountEl,
+  deleteContactsModalEl,
+
+  successAlert,
+  infoAlert,
+  dangerAlert,
+
+  processDeleteButton,
+  processingDeleteButton,
+  processDeleteSelectedButton,
+  processingDeleteSelectedButton
+  
+} from "./ui-elements.js";
+
+
 let contactState = "create";
 let contactId = null;
 let selectedContactsCount = 0;
+let selectedContactIds = [];
 
-// Contact UI Elements
-const newContactButton = document.querySelector('#create-contact-button')
-const contactForm = document.querySelector('#contact-form');
-const contactsTable = document.querySelector('#contacts-table')
-const contactFormModalEl = document.querySelector('#contact-form-modal');
-const contactFormModalTitleEl = document.querySelector('.modal-title');
-const deleteContactModalEl = document.querySelector('#delete-contact-modal');
-const deleteContactNameEl = document.querySelector('#delete-contact-name');
-const searchContactInput = document.querySelector('#search-contact-input');
-const selectedContactsEl = document.querySelector('#selected-contacts');
-const selectedContactsCountEl = document.querySelector('#selected-contacts-count');
-// const selectContactChexboxes = document.querySelectorAll('["data-select-contact"]');
 
 // Instantiate Bootstrap Modals
 const contactFormModal = new bootstrap.Modal(contactFormModalEl);
 const deleteContactModal = new bootstrap.Modal(deleteContactModalEl);
-
-// Alerts
-const successAlert = document.querySelector('#success-alert');
-const infoAlert = document.querySelector('#info-alert');
-const dangerAlert = document.querySelector('#danger-alert');
+const deleteContactsModal = new bootstrap.Modal(deleteContactsModalEl);
 
 
-// Form Input Fields
-const fullName = document.querySelector("#name");
-const phone = document.querySelector("#phone");
-const email = document.querySelector("#email");
-const address = document.querySelector("#address");
-
-// Form Buttons
-const submitButton = document.querySelector('#submit');
-const processingButton = document.querySelector('#processing');
-const processDeleteButton = document.querySelector('#process-delete-button');
-const processingDeleteButton = document.querySelector('#processing-delete-button');
-
-
-// Fetch current contacts from localStorage
+// display contacts table
 displayContacts();
 
 
-
-// 1. Global Functions
-
-/* Display contacts on Contacts UI Table */
-function displayContacts(contacts = null) {
-  const loadingState = `<tr>
-              <td colspan="6">
-                <!-- <div class="py-5 text-center">
-                  Loading Contacts...
-                </div> -->
-                <div class="d-flex justify-content-center align-items-center"
-                  style="padding-top: 5rem; padding-bottom: 5rem;">
-                  <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                </div>
-              </td>
-            </tr>`;
-  
-  contactsTable.querySelector('tbody').innerHTML = loadingState;
-  
-  setTimeout(() => {
-
-  contacts = contacts || JSON.parse(localStorage.getItem('phonebook'));
-  
-  let emptyRows = "";
-  if (!contacts || contacts.length == 0) {
-    emptyRows = `
-      <tr>
-        <td colspan="6">
-          <div class="text-center" style="padding-top: 5rem; padding-bottom: 5rem">No contacts!</div>
-        </td>
-      </tr>
-    `
-
-    
-    contactsTable.querySelector('tbody').innerHTML = emptyRows;
-    return;
-  }
-
-  document.querySelector('#all-contacts-count').textContent = contacts.length;
-  let contactsData = "";
-  contacts.forEach((contact, index) => {
-
-  
-    contactsData += `<tr>
-    <td>
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" value="${index}" id="checkbox-${index}"  data-select-contact=${index}>
-       
-      </div>
-    </td>
-    <th scope="row">${contact.name}</th>
-    <td>${contact.phone}</td>
-    <td>${contact.email}</td>
-    <td>${contact.address}</td>
-    <td>
-      <div class="d-flex align-items-center space-x-2">
-        <button class="btn btn-info" id="${index}" data-edit-button="${index}">Edit</button>
-        <button class="btn btn-danger" data-delete-button="${index}" data-contact-name="${contact.name}">Delete</button>
-      </div>
-    </td>
-  </tr>`;
-
-})
-
-  contactsTable.querySelector('tbody').innerHTML = contactsData;
-  }, 500)
-  
-}
-
-
-
-
-
-function searchContacts(searchValue) {
-  console.log(searchValue);
-  let contacts = getAllContacts();
-
-  contacts = contacts.filter(function(contact) { 
-    // console.log(JSON.stringify(Object.values(contact)));
-    console.log((Object.values(contact).join(" ")));
-    return Object.values(contact).join(" ").includes(searchValue);
-
-  });
-
-  // console.log(contacts)
-  displayContacts(contacts);  
-}
-
-/* Reset Form Fields */
-function resetForm() {  
-  fullName.value = "";
-  phone.value = "";
-  email.value = "";
-  address.value = "";
-
-  // reset form errors
-  contactForm.classList.remove('was-validated');
-
-}
-
-/* Hide Alert */
-function hideAlert(alert, duration = 5000) {
-  setTimeout(() => {
-    alert.classList.add('d-none');
-  }, duration);
-}
-
-/* Get all Contacts from localStorage */
-function getAllContacts() {
-  return JSON.parse(localStorage.getItem('phonebook'))  || [];
-}
-
 // 2. Event Listeners
 
-searchContactInput.addEventListener('input', () => {
-  // console.log('searching..');
-  searchContacts(searchContactInput.value);
-});
-
-
+searchContactInput.addEventListener('input', () => searchContacts(searchContactInput.value));
 
 /* Create Contact Modal - Listen for a click on the "New Contact", and then open the Contact Form Modal  */
-newContactButton.addEventListener('click', () => {
-  contactFormModal.show();
-});
+newContactButton.addEventListener('click', () => contactFormModal.show() );
 
 /* Edit Contact Modal - Listen to a click on the body (whole web page), but check for clicks done on the Edit Buttons */
 document.addEventListener('click', (event) => {
@@ -216,19 +98,28 @@ document.addEventListener('click', (event) => {
     
     if(checkboxEl.value == 'all') {
       if (checkboxEl.checked) {
-        checkboxes.forEach(checkbox => checkbox.checked = true)
+        checkboxes.forEach(checkbox => {
+          
+          checkbox.checked = true
+          selectedContactIds.push(checkbox.value);
+
+        })
+        selectedContactIds.shift();
         selectedContactsCount = checkboxes.length - 1;
       } else {
         checkboxes.forEach(checkbox => checkbox.checked = false)
         selectedContactsCount = 0
+        selectedContactIds = [];
       }
       
     
     } else {
       if (checkboxEl.checked) {
         selectedContactsCount++;
+        selectedContactIds.push(checkboxEl.value);
       } else {
         selectedContactsCount--;
+        selectedContactIds.shift();
       }
     }
 
@@ -242,6 +133,11 @@ document.addEventListener('click', (event) => {
 
   
   }
+});
+
+selectedContactsEl.addEventListener('click', (event) => {
+  deleteContactsCountEl.textContent = selectedContactsCount;
+  deleteContactsModal.show();
 });
 
 /* Save new contact */
@@ -335,6 +231,40 @@ processDeleteButton.addEventListener('click', () => {
 
 
     deleteContactModal.hide();
+
+    displayContacts();
+    
+    dangerAlert.classList.remove('d-none');
+    hideAlert(dangerAlert);
+    
+  }, 1000);
+});
+processDeleteSelectedButton.addEventListener('click', () => {
+  
+  
+  // return;
+  processDeleteSelectedButton.classList.add('d-none');
+  processingDeleteSelectedButton.classList.remove('d-none');
+
+  
+  setTimeout(() => {
+
+    let contacts = getAllContacts();
+
+    contacts = contacts.filter((contact, index) => {
+
+      return !selectedContactIds.includes(String(index))
+    })
+
+    contacts = JSON.stringify(contacts);
+
+    localStorage.setItem('phonebook', contacts);
+
+    processDeleteSelectedButton.classList.remove('d-none');
+    processingDeleteSelectedButton.classList.add('d-none');
+
+
+    deleteContactsModal.hide();
 
     displayContacts();
     
