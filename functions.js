@@ -1,5 +1,5 @@
 // 1. Global Functions
-import { contactsTable } from './ui-elements.js';
+import { contactsTable, contactForm } from './ui-elements.js';
 import { fullName, phone, email, address } from "./form-elements.js"; 
 
 

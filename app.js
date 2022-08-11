@@ -119,7 +119,7 @@ document.addEventListener('click', (event) => {
         selectedContactIds.push(checkboxEl.value);
       } else {
         selectedContactsCount--;
-        selectedContactIds.shift();
+        selectedContactIds =  selectedContactIds.filter(selectedContactId => selectedContactId != checkboxEl.value);
       }
     }
 
@@ -265,6 +265,9 @@ processDeleteSelectedButton.addEventListener('click', () => {
 
 
     deleteContactsModal.hide();
+    selectedContactsEl.classList.add('d-none');
+    selectedContactsCount = 0;
+    selectedContactIds = [];
 
     displayContacts();
     
